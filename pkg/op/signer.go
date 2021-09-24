@@ -20,12 +20,12 @@ type tokenSigner struct {
 	alg     jose.SignatureAlgorithm
 }
 
-func NewSigner(ctx context.Context, storage AuthStorage, keyCh <-chan jose.SigningKey) Signer {
+func NewSigner(ctx context.Context, storage AuthStorage, keyCh <-chan jose.SigningKey, signOpt *jose.SignerOptions) Signer {
 	s := &tokenSigner{
 		storage: storage,
 	}
 
-	go s.refreshSigningKey(ctx, keyCh)
+	go s.refreshSigningKey(ctx, keyCh, signOpt)
 
 	return s
 }
@@ -44,7 +44,7 @@ func (s *tokenSigner) Signer() jose.Signer {
 	return s.signer
 }
 
-func (s *tokenSigner) refreshSigningKey(ctx context.Context, keyCh <-chan jose.SigningKey) {
+func (s *tokenSigner) refreshSigningKey(ctx context.Context, keyCh <-chan jose.SigningKey, signOpt *jose.SignerOptions) {
 	for {
 		select {
 		case <-ctx.Done():
@@ -57,7 +57,7 @@ func (s *tokenSigner) refreshSigningKey(ctx context.Context, keyCh <-chan jose.S
 				continue
 			}
 			var err error
-			s.signer, err = jose.NewSigner(key, &jose.SignerOptions{})
+			s.signer, err = jose.NewSigner(key, signOpt)
 			if err != nil {
 				logging.Log("OP-pf32aw").WithError(err).Error("error creating signer")
 				continue

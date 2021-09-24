@@ -99,7 +99,7 @@ type endpoints struct {
 	JwksURI            Endpoint
 }
 
-func NewOpenIDProvider(ctx context.Context, config *Config, storage Storage, opOpts ...Option) (OpenIDProvider, error) {
+func NewOpenIDProvider(ctx context.Context, config *Config, storage Storage, signOpt *jose.SignerOptions, opOpts ...Option) (OpenIDProvider, error) {
 	err := ValidateIssuer(config.Issuer)
 	if err != nil {
 		return nil, err
@@ -119,7 +119,7 @@ func NewOpenIDProvider(ctx context.Context, config *Config, storage Storage, opO
 	}
 
 	keyCh := make(chan jose.SigningKey)
-	o.signer = NewSigner(ctx, storage, keyCh)
+	o.signer = NewSigner(ctx, storage, keyCh, signOpt)
 	go storage.GetSigningKey(ctx, keyCh)
 
 	o.httpHandler = CreateRouter(o, o.interceptors...)

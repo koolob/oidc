@@ -2,6 +2,7 @@ package op
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"net/url"
 
@@ -24,6 +25,7 @@ type Exchanger interface {
 
 func tokenHandler(exchanger Exchanger) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("token function:",r.URL.RawQuery, r.Form.Encode())
 		switch r.FormValue("grant_type") {
 		case string(oidc.GrantTypeCode):
 			CodeExchange(w, r, exchanger)

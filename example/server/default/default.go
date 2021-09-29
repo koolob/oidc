@@ -21,7 +21,7 @@ func main() {
 		CryptoKey: sha256.Sum256([]byte("test")),
 	}
 	storage := mock.NewAuthStorage()
-	handler, err := op.NewOpenIDProvider(ctx, config, storage, op.WithCustomTokenEndpoint(op.NewEndpoint("test")))
+	handler, err := op.NewOpenIDProvider(ctx, config, storage,nil, op.WithCustomTokenEndpoint(op.NewEndpoint("test")))
 	if err != nil {
 		log.Fatal(err)
 	}

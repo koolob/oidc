@@ -3,6 +3,7 @@ package op
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/caos/oidc/pkg/oidc"
@@ -30,6 +31,7 @@ func CodeExchange(w http.ResponseWriter, r *http.Request, exchanger Exchanger) {
 		RequestError(w, r, err)
 		return
 	}
+	fmt.Println("CodeExchange:",resp.AccessToken,resp.TokenType,resp.ExpiresIn,resp.IDToken)
 	utils.MarshalJSON(w, resp)
 }
 
